@@ -8,48 +8,49 @@ import { sepolia } from 'wagmi/chains';
 export function useVault(vaultAddress: `0x${string}`) {
   const { address } = useAccount();
 
-  const { data: totalAssets, isLoading: totalLoading, error: totalError } = useReadContract({
+  const { data: totalAssets, error: totalError } = useReadContract({
     address: vaultAddress,
     abi: VAULT_ABI,
-    functionName: 'totalAssets',
+    functionName: 'totalSupply', // Using totalSupply instead of totalAssets for ERC20
     chainId: sepolia.id,
+    query: {
+      retry: false,
+    },
   });
 
-  const { data: userBalance, isLoading: balanceLoading, error: balanceError } = useReadContract({
+  const { data: userBalance, error: balanceError } = useReadContract({
     address: vaultAddress,
     abi: VAULT_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address },
-    chainId: sepolia.id,
-  });
-
-  const { data: assetAddress } = useReadContract({
-    address: vaultAddress,
-    abi: VAULT_ABI,
-    functionName: 'asset',
+    query: { 
+      enabled: !!address,
+      retry: false,
+    },
     chainId: sepolia.id,
   });
 
   const { data: decimals } = useReadContract({
-    address: assetAddress,
-    abi: ERC20_ABI,
+    address: vaultAddress, // Get decimals from the same contract
+    abi: VAULT_ABI,
     functionName: 'decimals',
-    query: { enabled: !!assetAddress },
     chainId: sepolia.id,
+    query: {
+      retry: false,
+    },
   });
 
-  const isLoading = totalLoading || balanceLoading;
-
-  // For demo purposes, return mock data if contract calls fail
-  const tvl = totalAssets && decimals ? formatUnits(totalAssets, decimals) : '125000';
+  // Check if any critical call failed
+  const hasError = !!totalError;
+  
+  // Only return real blockchain data, no fallbacks
+  const tvl = totalAssets && decimals ? formatUnits(totalAssets, decimals) : '0';
   const balance = userBalance && decimals ? formatUnits(userBalance, decimals) : '0';
 
   return {
     tvl,
     userBalance: balance,
-    isLoading,
-    error: totalError,
-    hasError: false, // Don't show error for demo
+    error: totalError || balanceError,
+    hasError,
   };
 }

@@ -1,30 +1,30 @@
 'use client';
 
-import { useReadContract, useAccount, useChainId } from 'wagmi';
-import { ERC20_ABI, USDC_ADDRESSES } from '@/lib/contracts';
+import { useReadContract, useAccount } from 'wagmi';
+import { ERC20_ABI, USDC_ADDRESS } from '@/lib/contracts';
 import { formatUnits } from 'viem';
+import { sepolia } from 'wagmi/chains';
 
 export function useUSDCBalance() {
   const { address } = useAccount();
-  const chainId = useChainId();
-  
-  const usdcAddress = USDC_ADDRESSES[chainId as keyof typeof USDC_ADDRESSES];
 
-  const { data: balance, isLoading, refetch } = useReadContract({
-    address: usdcAddress,
+  const { data: balance, isLoading, refetch, error } = useReadContract({
+    address: USDC_ADDRESS,
     abi: ERC20_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
     query: {
-      enabled: !!address && !!usdcAddress,
-      refetchInterval: 10000, // Poll every 10 seconds
+      enabled: !!address,
+      refetchInterval: 10000,
     },
+    chainId: sepolia.id,
   });
 
   return {
-    balance: balance ? formatUnits(balance, 6) : '0',
+    balance: balance ? formatUnits(balance, 6) : '0', // USDC has 6 decimals
     isLoading,
     refetch,
-    usdcAddress,
+    error,
+    hasError: !!error,
   };
 }

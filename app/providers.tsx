@@ -1,19 +1,25 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, http } from 'wagmi';
-import { mainnet, sepolia } from 'wagmi/chains';
-import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { WagmiProvider, http, createConfig } from 'wagmi';
+import { sepolia } from 'wagmi/chains';
+import { injected, metaMask, coinbaseWallet } from 'wagmi/connectors';
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { useState } from 'react';
 
-const config = getDefaultConfig({
-  appName: 'Vault DApp',
-  projectId: 'YOUR_PROJECT_ID',
-  chains: [mainnet, sepolia],
+// Simple connectors for local development - no WalletConnect needed
+const connectors = [
+  injected(),
+  metaMask(),
+  coinbaseWallet({ appName: 'TM100 Vault DApp' }),
+];
+
+const config = createConfig({
+  chains: [sepolia],
+  connectors,
   transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
+    [sepolia.id]: http('https://ethereum-sepolia.publicnode.com'),
   },
   ssr: true,
 });
@@ -23,7 +29,8 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     defaultOptions: {
       queries: {
         refetchOnWindowFocus: false,
-        retry: 1,
+        retry: 2,
+        staleTime: 10000,
       },
     },
   }));
@@ -31,7 +38,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>{children}</RainbowKitProvider>
+        <RainbowKitProvider>
+          {children}
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

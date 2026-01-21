@@ -15,9 +15,9 @@ export function Portfolio() {
   if (!address) return null;
 
   const positions = [
-    { name: VAULTS[0].name, balance: stableVault.userBalance, isLoading: stableVault.isLoading },
-    { name: VAULTS[1].name, balance: growthVault.userBalance, isLoading: growthVault.isLoading },
-    { name: VAULTS[2].name, balance: turboVault.userBalance, isLoading: turboVault.isLoading },
+    { name: VAULTS[0].name, balance: stableVault.userBalance },
+    { name: VAULTS[1].name, balance: growthVault.userBalance },
+    { name: VAULTS[2].name, balance: turboVault.userBalance },
   ];
 
   const totalValue = positions.reduce((sum, pos) => sum + parseFloat(pos.balance || '0'), 0);
@@ -26,14 +26,14 @@ export function Portfolio() {
   if (!hasPositions) return null;
 
   return (
-    <div className="mb-6 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-      <h2 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+    <div className="mb-8 backdrop-blur-lg hover:backdrop-blur-md border-1 transition hover:scale-102 duration-500 delay-100 rounded-3xl p-6 bg-black/20 border-b border-white/10">
+      <h2 className="mb-4 text-2xl font-bold bg-white bg-clip-text text-transparent">
         Your Portfolio
       </h2>
       
-      <div className="mb-4 rounded-lg bg-zinc-50 p-4 dark:bg-zinc-800">
-        <div className="text-sm text-zinc-600 dark:text-zinc-400">Total Value</div>
-        <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+      <div className="mb-4 rounded-xl bg-white/10 p-5 backdrop-blur-sm">
+        <div className="text-sm font-medium text-gray-300">Total Value</div>
+        <div className="text-3xl font-bold text-white">
           ${formatBalance(totalValue.toString())}
         </div>
       </div>
@@ -44,10 +44,10 @@ export function Portfolio() {
           if (value === 0) return null;
           
           return (
-            <div key={position.name} className="flex justify-between">
-              <span className="text-sm text-zinc-600 dark:text-zinc-400">{position.name}</span>
-              <span className="font-medium text-zinc-900 dark:text-zinc-50">
-                {position.isLoading ? '...' : `$${formatBalance(position.balance)}`}
+            <div key={position.name} className="flex justify-between rounded-xl bg-white/10 p-3 backdrop-blur-sm">
+              <span className="text-sm font-medium text-gray-300">{position.name}</span>
+              <span className="font-bold text-white">
+                ${formatBalance(position.balance)}
               </span>
             </div>
           );

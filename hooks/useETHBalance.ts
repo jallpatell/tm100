@@ -5,7 +5,7 @@ import { useAccount, useBalance } from 'wagmi';
 export function useETHBalance() {
   const { address } = useAccount();
   
-  const { data, isLoading } = useBalance({
+  const { data } = useBalance({
     address,
     query: { enabled: !!address },
   });
@@ -13,6 +13,5 @@ export function useETHBalance() {
   return {
     balance: data?.formatted || '0',
     symbol: data?.symbol || 'ETH',
-    isLoading,
   };
 }

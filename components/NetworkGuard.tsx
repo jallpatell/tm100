@@ -15,21 +15,21 @@ export function NetworkGuard({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="rounded-xl border border-orange-200 bg-orange-50 p-6 dark:border-orange-900 dark:bg-orange-950">
+    <div className="rounded-2xl border border-gray-100 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-gray-800 dark:bg-gray-800/80">
       <div className="mb-4 flex items-start gap-3">
         <div className="text-2xl">⚠️</div>
         <div className="flex-1">
-          <h3 className="mb-1 font-semibold text-orange-900 dark:text-orange-50">
+          <h3 className="mb-1 text-lg font-bold text-gray-900 dark:text-white">
             Wrong Network
           </h3>
-          <p className="text-sm text-orange-700 dark:text-orange-300">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
             Please switch to Sepolia testnet to use this app
           </p>
         </div>
       </div>
       <button
         onClick={() => switchChain({ chainId: sepolia.id })}
-        className="w-full rounded-lg bg-orange-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600"
+        className="w-full rounded-xl bg-[#0D76FE] px-4 py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-[#0D76FE]/90 hover:shadow-xl active:scale-95"
       >
         Switch to Sepolia
       </button>
